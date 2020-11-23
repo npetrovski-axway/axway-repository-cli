@@ -1,7 +1,7 @@
 {
 	"name": "@axway/axway-repository-cli",
 	"version": "1.0.0",
-	"description": "AMPLIFY Repository CLI (Beta)",
+	"description": "AMPLIFY Repository CLI (POC)",
 	"license": "Apache-2.0",
 	"main": "./dist/main",
 	"keywords": [
