@@ -1,5 +1,4 @@
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 import { resolve } from '../../environments';
 
 export default {
@@ -22,14 +21,26 @@ export default {
 		console.log(`Pulling image ${imageName} ...`);
 
 		try {
-			const pull = spawn('docker', ['pull', imageName]);
+			const account = await require('../../_auth').default;
 
-			pull.stdout.pipe(process.stdout, { end: false });
-			pull.stderr.pipe(process.stderr, { end: false });
+			const dockerLogin = spawn('docker', [
+				'login',
+				'--username=system',
+				config.docker.url,
+				'--password-stdin',
+			]);
 
-			// pull.on('close', (code) => {
+			setTimeout(() => {
+				dockerLogin.stdin.write(account.sid);
+				dockerLogin.stdin.end();
+			}, 100);
 
-			// });
+			dockerLogin.on('close', (code) => {
+				const pull = spawn('docker', ['pull', imageName]);
+
+				pull.stdout.pipe(process.stdout, { end: false });
+				pull.stderr.pipe(process.stderr, { end: false });
+			});
 		} catch (e) {
 			console.log(e);
 		}

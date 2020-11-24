@@ -3,15 +3,8 @@ import { resolve } from '../../environments';
 import { createTable } from '@axway/amplify-cli-utils';
 
 export default {
-	desc: 'Search the Axway Repository for images',
-	args: [
-		{
-			name: 'term',
-			hint: 'TERM',
-			desc: 'The image name',
-			required: true,
-		},
-	],
+	desc: 'List all available Axway Repository images',
+	aliases: ['ls'],
 	options: {
 		'--full-names': 'Show image full names',
 		'--offset': 'Retrieving search results with offset pagination',
@@ -33,7 +26,7 @@ export default {
 				});
 
 				const { body } = await service('v2/search', {
-					searchParams: { q: argv.term },
+					/* searchParams: { q: argv.term }, */
 				});
 
 				const table = createTable([

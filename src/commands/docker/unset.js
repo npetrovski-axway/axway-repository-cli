@@ -4,7 +4,7 @@ import { resolve } from '../../environments';
 export default {
 	desc: 'Remove Axway Repository from docker native command',
 
-	async action({ argv, console }) {
+	async action({ console }) {
 		try {
 			const config = resolve();
 
@@ -13,15 +13,13 @@ export default {
 				console.log(`Docker: ${data}`);
 			});
 
-			/*
 			dockerLogin.stderr.on('data', (data) => {
 				console.error(`stderr: ${data}`);
 			});
 
-			dockerLogin.on('close', (code) => {
-				console.log(`child process exited with code ${code}`);
-			});
-			*/
+			// dockerLogin.on('close', (code) => {
+			// 	console.log(`child process exited with code ${code}`);
+			// });
 		} catch (err) {
 			console.error(err.toString());
 		}

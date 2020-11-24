@@ -18,8 +18,6 @@ if (!bin.sync('docker')) {
 // );
 // config.save();
 
-import { resolve } from '../environments';
-
 export default {
 	desc: 'Docker commands',
 	defaultCommand: 'help',

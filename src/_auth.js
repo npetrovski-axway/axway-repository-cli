@@ -2,7 +2,7 @@ import { initSDK } from '@axway/amplify-cli-utils';
 
 export default (async () => {
 	try {
-		const { config, sdk } = initSDK();
+		const { sdk } = initSDK();
 
 		const account = await sdk.auth.find();
 		if (!account) {

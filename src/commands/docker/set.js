@@ -1,11 +1,10 @@
-import { initSDK } from '@axway/amplify-cli-utils';
 import { resolve } from '../../environments';
 import { spawn } from 'child_process';
 
 export default {
 	desc: 'Setup docker native command for Axway Repository',
 
-	async action({ argv, console }) {
+	async action({ console }) {
 		try {
 			const account = await require('../../_auth').default;
 
