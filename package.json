@@ -29,17 +29,17 @@
 	},
 	"author": "Axway",
 	"dependencies": {
-		"@axway/amplify-auth-sdk": "^2.3.3",
-		"@axway/amplify-cli-utils": "^4.1.3",
-		"cli-kit": "^1.8.9",
+		"@axway/amplify-cli-utils": "^4.2.3",
+		"cli-kit": "^1.9.3",
+		"cross-spawn": "^7.0.3",
 		"hasbin": "^1.2.3",
-		"snooplogg": "^3.0.0"
+		"snooplogg": "^3.0.2"
 	},
 	"devDependencies": {
-		"appcd-gulp": "^3.0.1"
+		"appcd-gulp": "^3.1.1"
 	},
 	"engines": {
-		"node": ">=10.13.0"
+		"node": ">=10.19.0"
 	},
 	"publishConfig": {
 		"access": "public"

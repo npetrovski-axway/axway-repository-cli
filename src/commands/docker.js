@@ -22,5 +22,5 @@ export default {
 	desc: 'Docker commands',
 	defaultCommand: 'help',
 	commands: `${__dirname}/docker`,
-	name: 'docker',
+	name: 'docker'
 };

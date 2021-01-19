@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import spawn from 'cross-spawn';
 import { resolve } from '../../environments';
 
 export default {
@@ -20,29 +20,25 @@ export default {
 
 		console.log(`Pulling image ${imageName} ...`);
 
-		try {
-			const account = await require('../../_auth').default;
+		const account = await require('../../_auth').default;
 
-			const dockerLogin = spawn('docker', [
-				'login',
-				'--username=system',
-				config.docker.url,
-				'--password-stdin',
-			]);
+		const dockerLogin = spawn('docker', [
+			'login',
+			'--username=system',
+			config.docker.url,
+			'--password-stdin',
+		]);
 
-			setTimeout(() => {
-				dockerLogin.stdin.write(account.sid);
-				dockerLogin.stdin.end();
-			}, 100);
+		setTimeout(() => {
+			dockerLogin.stdin.write(account.sid);
+			dockerLogin.stdin.end();
+		}, 100);
 
-			dockerLogin.on('close', (code) => {
-				const pull = spawn('docker', ['pull', imageName]);
+		dockerLogin.on('close', (code) => {
+			const pull = spawn('docker', [ 'pull', imageName ]);
 
-				pull.stdout.pipe(process.stdout, { end: false });
-				pull.stderr.pipe(process.stderr, { end: false });
-			});
-		} catch (e) {
-			console.log(e);
-		}
-	},
+			pull.stdout.pipe(process.stdout, { end: false });
+			pull.stderr.pipe(process.stderr, { end: false });
+		});
+	}
 };

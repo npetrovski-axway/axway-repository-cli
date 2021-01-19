@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-The Axway CLI requires [Node.js][1] 10.13.0 or newer.
+The Axway CLI requires [Node.js][1] 10.19.0 or newer.
 
 ## Installation
 

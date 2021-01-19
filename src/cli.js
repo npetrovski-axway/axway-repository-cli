@@ -14,5 +14,5 @@ export default new CLI({
 	help: true,
 	helpExitCode: 2,
 	name: 'repository',
-	version,
+	version
 });
