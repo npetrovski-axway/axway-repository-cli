@@ -1,26 +1,20 @@
-/*
-import snooplogg from 'snooplogg';
-import * as bin from 'hasbin';
-if (!bin.sync('docker')) {
-	throw new Error(
-		`${snooplogg.styles.alert(
-			'Docker is not installed on this machine. Visit https://docs.docker.com/get-docker/ for more information.'
-		)}`
-	);
-}
-*/
+import snooplogg from "snooplogg";
+import * as bin from "hasbin";
 
-// import loadConfig, { Config } from '@axway/amplify-config';
-// let config = loadConfig();
-// config.set(
-// 	'repository.docker.baseUrl',
-// 	'https://docker-repository.axwaytest.net'
-// );
-// config.save();
-
-export default {
-	desc: 'Docker commands',
-	defaultCommand: 'help',
-	commands: `${__dirname}/docker`,
-	name: 'docker',
+const cmd = {
+    desc: "Explore and download Docker images",
+    commands: `${__dirname}/docker`,
+    aliases: [ "d" ],
+    name: "docker",
 };
+
+if (!bin.sync("docker")) {
+    Object.assign(cmd,  {
+        commands: null,
+        defaultCommand: ({ console }) => {
+            console.log(snooplogg.styles.alert("Docker is not installed."));
+        },
+    });
+}
+
+export default cmd;

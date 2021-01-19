@@ -1,7 +1,9 @@
-export default {
-	desc: 'Setup Helm native command',
+import HelmService from "../../services/helm";
 
-	async action(/* { argv, console } */) {
-		throw new Error('Not yet implemented');
-	},
+export default {
+    desc: "Setup Axway Helm Repository",
+    action({ console }) {
+        const service = new HelmService(console);
+        service.login().catch(e => console.error(e.toString()));
+    }
 };

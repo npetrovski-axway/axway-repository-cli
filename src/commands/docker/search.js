@@ -1,66 +1,52 @@
-import * as request from '@axway/amplify-request';
-import { resolve } from '../../environments';
-import { createTable } from '@axway/amplify-cli-utils';
+import { resolve } from "../../environments";
+import { createTable } from "@axway/amplify-cli-utils";
+import RepositoryService from "../../services/repository";
+
+const config = resolve();
 
 export default {
-	desc: 'Search the Axway Repository for images',
-	args: [
-		{
-			name: 'term',
-			hint: 'TERM',
-			desc: 'The image name',
-			required: true,
-		},
-	],
-	options: {
-		'--full-names': 'Show image full names',
-		'--offset': 'Retrieving search results with offset pagination',
-		'--limit': 'Max number of search results',
-	},
-	async action({ argv, console }) {
-		try {
-			const account = await require('../../_auth').default;
-			const config = resolve();
+    desc: "Search the Axway Repository for images",
+    args: [
+        {
+            name: "term",
+            hint: "TERM",
+            desc: "The image name",
+            required: true,
+        },
+    ],
+    options: {
+        "--full-names": "Show image full names",
+        "--offset": "Retrieving search results with offset pagination",
+        "--limit": "Max number of search results",
+    },
+    action({ argv, console }) {
+        const service = new RepositoryService(console);
+        service.search(argv.term)
+            .then(({ body }) => {
+                if (body) {
+                    const table = createTable([
+                        "NAME",
+                        "TAG",
+                        "TITLE",
+                        "DESCRIPTION",
+                        "SHA256",
+                    ]);
 
-			if (account) {
-				const service = request.got.extend({
-					prefixUrl: `https://${config.docker.url}`,
-					headers: {
-						'user-agent': 'Axway CLI',
-						Authorization: `Bearer ${encodeURIComponent(account.sid)}`,
-					},
-					responseType: 'json',
-				});
+                    body.forEach(async (result) => {
+                        table.push([
+                            (argv.fullNames ? `${config.docker.url}/` : "")
+								+ `${result.attributes.name}`,
+                            `${result.attributes.tag}`,
+                            `${result.meta.title}`,
+                            `${result.meta.description}`,
+                            `${result.checksums.sha256}`,
+                        ]);
+                    });
 
-				const { body } = await service('v2/search', {
-					searchParams: { q: argv.term },
-				});
-
-				const table = createTable([
-					'NAME',
-					'TAG',
-					'TITLE',
-					'DESCRIPTION',
-					'SHA256',
-				]);
-
-				if (body) {
-					body.forEach(async (result) => {
-						table.push([
-							(argv.fullNames ? `${config.docker.url}/` : '') +
-								`${result.attributes.name}`,
-							`${result.attributes.tag}`,
-							`${result.meta.title}`,
-							`${result.meta.description}`,
-							`${result.checksums.sha256}`,
-						]);
-					});
-
-					console.log(table.toString());
-				}
-			}
-		} catch (err) {
-			console.error(err.toString());
-		}
-	},
+                    console.log(table.toString());
+                }
+                return true;
+            })
+            .catch(e => console.error(e.toString()));
+    },
 };

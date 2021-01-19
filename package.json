@@ -1,47 +1,54 @@
 {
-	"name": "@axway/axway-repository-cli",
-	"version": "1.0.0",
-	"description": "AMPLIFY Repository CLI (POC)",
-	"license": "Apache-2.0",
-	"main": "./dist/main",
-	"keywords": [
-		"amplify-test-package"
-	],
-	"amplify": {
-		"type": "amplify-cli-plugin"
-	},
-	"bin": {
-		"repository": "./bin/repository"
-	},
-	"cli-kit": {
-		"name": "repository",
-		"aliases": [
-			"repo"
-		],
-		"main": "./dist/cli"
-	},
-	"scripts": {
-		"build": "gulp build",
-		"coverage": "gulp coverage",
-		"docs": "gulp docs",
-		"prepare": "gulp build",
-		"test": "gulp test"
-	},
-	"author": "Axway",
-	"dependencies": {
-		"@axway/amplify-auth-sdk": "^2.3.3",
-		"@axway/amplify-cli-utils": "^4.1.3",
-		"cli-kit": "^1.8.9",
-		"hasbin": "^1.2.3",
-		"snooplogg": "^3.0.0"
-	},
-	"devDependencies": {
-		"appcd-gulp": "^3.0.1"
-	},
-	"engines": {
-		"node": ">=10.13.0"
-	},
-	"publishConfig": {
-		"access": "public"
-	}
+    "name": "@axway/axway-repository-cli",
+    "version": "1.0.1",
+    "description": "AMPLIFY Repository CLI",
+    "license": "Apache-2.0",
+    "main": "./dist/main",
+    "keywords": [
+        "amplify-test-package"
+    ],
+    "amplify": {
+        "type": "amplify-cli-plugin"
+    },
+    "bin": {
+        "repository": "./bin/repository"
+    },
+    "cli-kit": {
+        "name": "repository",
+        "aliases": [
+            "repo"
+        ],
+        "main": "./dist/cli",
+        "actions": {
+            "axway:auth:login": "./dist/actions/auth-login.js",
+            "axway:auth:logout": "./dist/actions/auth-logout.js",
+            "axway:auth:switch": "./dist/actions/auth-switch.js",
+            "axway:pm:install": "./dist/actions/pm-install.js",
+            "axway:pm:uninstall": "./dist/actions/pm-uninstall.js"
+        }
+    },
+    "scripts": {
+        "build": "gulp build",
+        "coverage": "gulp coverage",
+        "docs": "gulp docs",
+        "prepare": "gulp build",
+        "test": "gulp test"
+    },
+    "author": "Axway",
+    "dependencies": {
+        "@axway/amplify-cli-utils": "^4.2.3",
+        "cross-spawn": "^7.0.3",
+        "cli-kit": "^1.9.3",
+        "hasbin": "^1.2.3",
+        "snooplogg": "^3.0.2"
+    },
+    "devDependencies": {
+        "appcd-gulp": "^3.1.1"
+    },
+    "engines": {
+        "node": ">=10.19.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
 }
