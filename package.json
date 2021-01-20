@@ -23,7 +23,6 @@
             "axway:auth:login": "./dist/actions/auth-login.js",
             "axway:auth:logout": "./dist/actions/auth-logout.js",
             "axway:auth:switch": "./dist/actions/auth-switch.js",
-            "axway:pm:install": "./dist/actions/pm-install.js",
             "axway:pm:uninstall": "./dist/actions/pm-uninstall.js"
         }
     },

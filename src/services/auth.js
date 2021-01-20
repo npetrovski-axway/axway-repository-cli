@@ -8,8 +8,7 @@ async function retrieveSession() {
             }
             return account;
         })
-        .then(account => account?.sid)
-        .catch(e => console.error(e.toString()));
+        .then(account => account?.sid);
 }
 
 export { retrieveSession };

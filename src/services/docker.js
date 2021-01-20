@@ -1,6 +1,8 @@
 import spawn from "cross-spawn";
 import { retrieveSession } from "./auth";
 import { resolve } from "../environments";
+import { CFG_DOCKER_SET } from "../constants";
+import { loadConfig } from "@axway/amplify-cli-utils";
 
 const config = resolve();
 
@@ -29,16 +31,24 @@ export default class DockerService {
                     proc.stdout.on("data", (data) => this.console.log(`Docker: ${data}`));
                     proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
                     proc.stderr.on("data", (err) => reject(err));
+
+                    const cfg = loadConfig();
+                    cfg.set(CFG_DOCKER_SET, true);
+                    cfg.save();
                 });
             });
     }
 
     logout() {
         return new Promise((resolve, reject) => {
+
             const proc = spawn("docker", [ "logout", config.docker.url ]);
             proc.stdout.on("data", (data) => this.console.log(`Docker: ${data}`));
             proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
             proc.stderr.on("data", (err) => reject(err));
+            const cfg = loadConfig();
+            cfg.delete(CFG_DOCKER_SET);
+            cfg.save();
         });
     }
 
