@@ -1,28 +1,31 @@
 import { createRequestClient } from "@axway/amplify-cli-utils";
 import { retrieveSession } from "./auth";
-import { resolve } from "../environments";
-
-const config = resolve();
 
 export default class RepositoryService {
-    constructor(console) {
+    constructor(console, config) {
         this.console = console ?? global.console;
+        this.config = config;
     }
 
-    search(term) {
+    search(term, params = {}) {
         return retrieveSession()
             .then(sessionId => {
                 const service = createRequestClient({
-                    prefixUrl: `https://${config.docker.url}`,
+                    prefixUrl: this.config.url,
                     headers: {
-                        "user-agent": "Axway CLI",
-                        Authorization: `Bearer ${encodeURIComponent(sessionId)}`,
+                        "User-Agent": "Axway CLI",
+                        Cookie: `connect.sid=${encodeURIComponent(sessionId)}`,
+                        "Content-Type": "application/json"
                     },
+                    method: "POST",
                     responseType: "json",
                 });
 
-                return service("v2/search", {
-                    searchParams: { q: term },
+                return service("api/v1/artifacts/search", {
+                    json: {
+                        query: term,
+                        ...params
+                    }
                 });
             });
     }

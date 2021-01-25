@@ -1,25 +1,25 @@
 import spawn from "cross-spawn";
 import { retrieveSession } from "./auth";
-import { resolve } from "../environments";
 import { CFG_DOCKER_SET } from "../constants";
 import { loadConfig } from "@axway/amplify-cli-utils";
-
-const config = resolve();
+import RepositoryService from "./repository";
 
 export default class DockerService {
 
-    constructor(console) {
+    constructor(console, config) {
         this.console = console ?? global.console;
+        this.config = config;
     }
 
     login() {
         return retrieveSession()
             .then(sessionId => {
+                const dockerUrl = new URL(this.config.docker.repo);
                 return new Promise((resolve, reject) => {
                     const proc = spawn("docker", [
                         "login",
                         "--username=cli",
-                        config.docker.url,
+                        dockerUrl.host,
                         "--password-stdin",
                     ]);
 
@@ -41,8 +41,8 @@ export default class DockerService {
 
     logout() {
         return new Promise((resolve, reject) => {
-
-            const proc = spawn("docker", [ "logout", config.docker.url ]);
+            const dockerUrl = new URL(this.config.docker.repo);
+            const proc = spawn("docker", [ "logout", dockerUrl.host ]);
             proc.stdout.on("data", (data) => this.console.log(`Docker: ${data}`));
             proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
             proc.stderr.on("data", (err) => reject(err));
@@ -55,9 +55,10 @@ export default class DockerService {
     pull(image) {
         return this.login().then(() => {
             return new Promise((resolve, reject) => {
-                const imageName = image.startsWith(config.docker.url)
+                const dockerUrl = new URL(this.config.docker.repo);
+                const imageName = image.startsWith(dockerUrl.host)
                     ? image
-                    : `${config.docker.url}/${image}`;
+                    : `${dockerUrl.host}/${image}`;
 
                 console.log(`Pulling image ${imageName}`);
                 const proc = spawn("docker", [ "pull", imageName ]);
@@ -67,6 +68,17 @@ export default class DockerService {
                 proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
                 proc.stderr.on("data", (err) => reject(err));
             });
+        });
+    }
+
+    search(term) {
+        const repository = new RepositoryService(this.console, this.config);
+        return repository.search(term, {
+            groups: {
+                dockerType: {
+                    "webliv.type": [ "DockerImage" ]
+                }
+            }
         });
     }
 }

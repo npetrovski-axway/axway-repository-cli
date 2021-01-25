@@ -1,6 +1,7 @@
-import { resolve } from "../../environments";
 import { createTable } from "@axway/amplify-cli-utils";
-import RepositoryService from "../../services/repository";
+import DockerService from "../../services/docker";
+import { resolve } from "../../environments";
+import { strTruncate } from "../../utils";
 
 const config = resolve();
 
@@ -12,35 +13,33 @@ export default {
         "--offset": "Retrieving search results with offset pagination",
         "--limit": "Max number of search results",
     },
-    action({ argv, console }) {
-        const service = new RepositoryService(console);
-        service.search()
+    async action({ argv, console }) {
+        const service = new DockerService(console, config);
+        return service.search()
             .then(({ body }) => {
                 if (body) {
-
+                    const dockerUrl = new URL(config.docker.repo);
                     const table = createTable([
                         "NAME",
-                        "TAG",
+                        "PRODUCT",
                         "TITLE",
                         "DESCRIPTION",
-                        "SHA256",
+                        "DIGEST",
                     ]);
-                    body.forEach(async (result) => {
+                    body.entries.forEach(async (result) => {
                         table.push([
-                            (argv.fullNames ? `${config.docker.url}/` : "")
-                                    + `${result.attributes.name}`,
-                            `${result.attributes.tag}`,
-                            `${result.meta.title}`,
-                            `${result.meta.description}`,
-                            `${result.checksums.sha256}`,
+                            (argv.fullNames ? `${dockerUrl.host}/` : "")
+								+ `${result.artifactory.package.name}`,
+                            `${result.webliv.sfdc.mainProduct.name}`,
+                            `${result.webliv.title}`,
+                            `${strTruncate(result.webliv.description, 35)}`,
+                            `${result.artifactory.digests.sha256}`,
                         ]);
                     });
 
                     console.log(table.toString());
                 }
                 return true;
-            })
-            .catch(e => console.error(e.toString()));
-
+            });
     },
 };

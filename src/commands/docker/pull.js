@@ -1,4 +1,7 @@
 import DockerService from "../../services/docker";
+import { resolve } from "../../environments";
+
+const config = resolve();
 
 export default {
     desc: "Pull an image from Axway Repository",
@@ -10,8 +13,8 @@ export default {
             required: true,
         },
     ],
-    action({ argv, console }) {
-        const service = new DockerService(console);
-        service.pull(argv.image).catch(e => console.error(e.toString()));
+    async action({ argv, console }) {
+        const service = new DockerService(console, config);
+        return service.pull(argv.image);
     }
 };

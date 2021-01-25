@@ -2,27 +2,30 @@ import loadConfig from "@axway/amplify-config";
 
 export const environments = {
     dev: {
+        url: "http://127.0.0.1:8070",
         docker: {
-            url: "127.0.0.1:5000",
+            repo: "http://127.0.0.1:5000",
         },
         helm: {
-            url: "127.0.0.1:5000"
+            repo: "http://127.0.0.1:5000"
         }
     },
     preprod: {
+        url: "https://repository-lab-dev.axwaytest.net:8071",
         docker: {
-            url: "docker-repository.axwaytest.net",
+            repo: "http://docker-repository.axwaytest.net",
         },
         helm: {
-            url: "helm-repository.axwaytest.net",
+            repo: "http://helm-repository.axwaytest.net:9080",
         }
     },
     prod: {
+        url: "https://repository.axway.com",
         docker: {
-            url: "docker.repository.axway.com",
+            repo: "https://docker.repository.axway.com",
         },
         helm: {
-            url: "helm.repository.axway.com",
+            repo: "https://helm.repository.axway.com",
         }
     },
 };

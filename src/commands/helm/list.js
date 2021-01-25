@@ -1,31 +1,24 @@
 import { createTable } from "@axway/amplify-cli-utils";
-import DockerService from "../../services/docker";
+import HelmService from "../../services/helm";
 import { resolve } from "../../environments";
 import { strTruncate } from "../../utils";
 
 const config = resolve();
 
 export default {
-    desc: "Search the Axway Repository for images",
-    args: [
-        {
-            name: "term",
-            hint: "TERM",
-            desc: "The image name",
-            required: true,
-        },
-    ],
+    desc: "List all available Axway Repository charts",
+    aliases: [ "ls" ],
     options: {
-        "--full-names": "Show image full names",
+        "--full-names": "Show full names",
         "--offset": "Retrieving search results with offset pagination",
         "--limit": "Max number of search results",
     },
     async action({ argv, console }) {
-        const service = new DockerService(console, config);
-        return service.search(argv.term)
+        const service = new HelmService(console, config);
+        return service.search()
             .then(({ body }) => {
                 if (body) {
-                    const dockerUrl = new URL(config.docker.repo);
+                    const helmUrl = new URL(config.helm.repo);
                     const table = createTable([
                         "NAME",
                         "PRODUCT",
@@ -33,10 +26,9 @@ export default {
                         "DESCRIPTION",
                         "DIGEST",
                     ]);
-
                     body.entries.forEach(async (result) => {
                         table.push([
-                            (argv.fullNames ? `${dockerUrl.host}/` : "")
+                            (argv.fullNames ? `${helmUrl.host}/` : "")
 								+ `${result.artifactory.package.name}`,
                             `${result.webliv.sfdc.mainProduct.name}`,
                             `${result.webliv.title}`,

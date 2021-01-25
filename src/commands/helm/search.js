@@ -1,17 +1,17 @@
 import { createTable } from "@axway/amplify-cli-utils";
-import DockerService from "../../services/docker";
+import HelmService from "../../services/helm";
 import { resolve } from "../../environments";
 import { strTruncate } from "../../utils";
 
 const config = resolve();
 
 export default {
-    desc: "Search the Axway Repository for images",
+    desc: "Search the Axway Repository for charts",
     args: [
         {
             name: "term",
             hint: "TERM",
-            desc: "The image name",
+            desc: "The Helm Chart name",
             required: true,
         },
     ],
@@ -21,11 +21,11 @@ export default {
         "--limit": "Max number of search results",
     },
     async action({ argv, console }) {
-        const service = new DockerService(console, config);
+        const service = new HelmService(console, config);
         return service.search(argv.term)
             .then(({ body }) => {
                 if (body) {
-                    const dockerUrl = new URL(config.docker.repo);
+                    const helmUrl = new URL(config.helm.repo);
                     const table = createTable([
                         "NAME",
                         "PRODUCT",
@@ -36,7 +36,7 @@ export default {
 
                     body.entries.forEach(async (result) => {
                         table.push([
-                            (argv.fullNames ? `${dockerUrl.host}/` : "")
+                            (argv.fullNames ? `${helmUrl.host}/` : "")
 								+ `${result.artifactory.package.name}`,
                             `${result.webliv.sfdc.mainProduct.name}`,
                             `${result.webliv.title}`,
