@@ -4,7 +4,8 @@ import { resolve } from "../../environments";
 const config = resolve();
 
 export default {
-    desc: "Setup docker native command for Axway Repository",
+    desc: "Register and authenticate Axway Repository",
+    aliases: [ "r" ],
     async action({ console }) {
         const service = new DockerService(console, config);
         return service.login();

@@ -11,22 +11,34 @@ export default class DockerService {
         this.config = config;
     }
 
+    clientVersion() {
+        return new Promise((resolve) => {
+            const proc = spawn("docker", [ "version", "--format", "{{.Client.Version}}" ]);
+            proc.stdout.on("data", (data) => resolve(`${data}`.split(".").map(d => parseInt(d))));
+            proc.stderr.on("data", () => resolve([ 0, 0, 0 ]));
+        });
+    }
+
     login() {
-        return retrieveSession()
-            .then(sessionId => {
+        return Promise.all([ retrieveSession(), this.clientVersion() ])
+            .then(([ sessionId, version ]) => {
                 const dockerUrl = new URL(this.config.docker.repo);
                 return new Promise((resolve, reject) => {
                     const proc = spawn("docker", [
                         "login",
                         "--username=cli",
                         dockerUrl.host,
-                        "--password-stdin",
+                        (version[0] >= 20)
+                            ? "--password-stdin"
+                            : `--password=${sessionId}`,
                     ]);
 
-                    setTimeout(() => {
-                        proc.stdin.write(sessionId);
-                        proc.stdin.end();
-                    }, 100);
+                    if (version[0] >= 20) {
+                        setTimeout(() => {
+                            proc.stdin.write(sessionId);
+                            proc.stdin.end();
+                        }, 100);
+                    }
 
                     proc.stdout.on("data", (data) => this.console.log(`Docker: ${data}`));
                     proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));

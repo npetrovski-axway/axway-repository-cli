@@ -14,20 +14,23 @@ export default class HelmService {
     login() {
         return retrieveSession()
             .then(sessionId => {
-                const helmUrl = new URL(this.config.helm.repo);
                 return new Promise((resolve, reject) => {
+                    const helmUrl = new URL(this.config.helm.repo);
                     const rm = spawn("helm", [ "repo", "remove", "axway" ]);
                     rm.on("close", () => {
-                        const proc = spawn("helm", [
+                        const params = [
                             "repo",
                             "add",
-                            "--username=cli",
-                            `--password=${sessionId}`,
-                            ((helmUrl.protocol === "http:") ? "--insecure-skip-tls-verify" : null),
                             "axway",
-                            this.config.helm.url
-                        ]);
+                            this.config.helm.repo,
+                            "--username=cli",
+                            `--password=${sessionId}`
+                        ];
+                        if (helmUrl.protocol === "http:") {
+                            params.push("--insecure-skip-tls-verify");
+                        }
 
+                        const proc = spawn("helm", params);
                         proc.stdout.on("data", (data) => this.console.log(`Helm: ${data}`));
                         proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
                         proc.stderr.on("data", (err) => reject(err));
@@ -63,6 +66,25 @@ export default class HelmService {
                     "webliv.type": [ "HelmChart" ]
                 }
             }
+        });
+    }
+
+    pull(chartname) {
+        return this.login().then(() => {
+            return new Promise((resolve, reject) => {
+                const helmUrl = new URL(this.config.helm.repo);
+                const imageName = chartname.startsWith(helmUrl.host)
+                    ? chartname
+                    : `${helmUrl.host}/${chartname}`;
+
+                console.log(`Pulling package ${imageName}`);
+                const proc = spawn("helm", [ "pull", imageName ]);
+
+                proc.stdout.pipe(process.stdout, { end: false });
+                proc.stderr.pipe(process.stderr, { end: false });
+                proc.on("close", (exitCode) => ((exitCode === 0) ? resolve(exitCode) : reject(exitCode)));
+                proc.stderr.on("data", (err) => reject(err));
+            });
         });
     }
 }

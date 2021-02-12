@@ -4,7 +4,8 @@ import { resolve } from "../../environments";
 const config = resolve();
 
 export default {
-    desc: "Remove Axway Repository from helm",
+    desc: "Unregister Axway Repository",
+    aliases: [ "u" ],
     async action({ console }) {
         const service = new HelmService(console, config);
         return service.logout();

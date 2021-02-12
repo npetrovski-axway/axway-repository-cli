@@ -11,12 +11,12 @@ export const environments = {
         }
     },
     preprod: {
-        url: "https://repository-lab-dev.axwaytest.net:8071",
+        url: "https://repository.axwaytest.net",
         docker: {
-            repo: "http://docker-repository.axwaytest.net",
+            repo: "https://docker-repository.axwaytest.net",
         },
         helm: {
-            repo: "http://helm-repository.axwaytest.net:9080",
+            repo: "https://helm-repository.axwaytest.net",
         }
     },
     prod: {

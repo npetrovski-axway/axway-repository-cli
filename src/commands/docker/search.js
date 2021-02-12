@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import { createTable } from "@axway/amplify-cli-utils";
 import DockerService from "../../services/docker";
 import { resolve } from "../../environments";
@@ -24,14 +25,15 @@ export default {
         const service = new DockerService(console, config);
         return service.search(argv.term)
             .then(({ body }) => {
-                if (body) {
+                if (body && body.entries?.length > 0) {
+                    console.log(`Available entries: ${body.entries.length}${EOL}`);
                     const dockerUrl = new URL(config.docker.repo);
                     const table = createTable([
-                        "NAME",
+                        "IMAGE",
                         "PRODUCT",
                         "TITLE",
                         "DESCRIPTION",
-                        "DIGEST",
+                        // "DIGEST",
                     ]);
 
                     body.entries.forEach(async (result) => {
@@ -41,11 +43,13 @@ export default {
                             `${result.webliv.sfdc.mainProduct.name}`,
                             `${result.webliv.title}`,
                             `${strTruncate(result.webliv.description, 35)}`,
-                            `${result.artifactory.digests.sha256}`,
+                            // `${result.artifactory.digests.sha256}`,
                         ]);
                     });
 
                     console.log(table.toString());
+                } else {
+                    console.log("No entries found.");
                 }
                 return true;
             });
